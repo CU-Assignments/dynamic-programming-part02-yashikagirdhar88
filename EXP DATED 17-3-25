@@ -1,0 +1,172 @@
+1.AIM:-Jump Game
+PROGRAM:-class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int n = nums.size();
+        vector<bool> dp(n, false); // Step 1: Create a DP array
+        dp[0] = true; // Step 2: The first index is always reachable
+        
+        for (int i = 0; i < n; i++) {
+            if (!dp[i]) continue; // Step 3: If the current index is unreachable, skip
+            
+            int maxJump = min(i + nums[i], n - 1); // Step 4: Calculate max jump range
+            
+            for (int j = i + 1; j <= maxJump; j++) {
+                dp[j] = true; // Step 5: Mark reachable indices
+            }
+            
+            if (dp[n - 1]) return true; // Step 6: Early exit if the last index is reachable
+        }
+        
+        return dp[n - 1]; // Step 7: Return whether the last index is reachable
+    }
+};
+
+2.AIM:-Unique Paths
+PROGRAM:-class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<vector<int>> dp(m, vector<int>(n, 1));  // Step 1: Create a DP table, initialize all cells with 1
+
+        for (int i = 1; i < m; i++) {  // Step 2: Iterate through rows (starting from row 1)
+            for (int j = 1; j < n; j++) {  // Step 3: Iterate through columns (starting from column 1)
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];  // Step 4: Compute number of ways to reach (i, j)
+            }
+        }
+        
+        return dp[m - 1][n - 1];  // Step 5: Return number of ways to reach bottom-right corner
+    }
+};
+
+3.AIM:-Coin Change
+PROGRAM:-class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        vector<int> dp(amount + 1, amount + 1); // Step 1: Initialize DP table with a large value
+        dp[0] = 0; // Step 2: Base case - 0 coins are needed for amount 0
+
+        for (int i = 1; i <= amount; i++) {  // Step 3: Iterate through all amounts from 1 to amount
+            for (int coin : coins) {  // Step 4: Try every coin denomination
+                if (i >= coin) { // Step 5: Only process if the coin can be used
+                    dp[i] = min(dp[i], 1 + dp[i - coin]); // Step 6: Update DP[i] using previous subproblem
+                }
+            }
+        }
+
+        return (dp[amount] == amount + 1) ? -1 : dp[amount]; // Step 7: Return the answer or -1 if unreachable
+    }
+};
+
+4.AIM:-Longest Increasing Subsequence
+PROGRAM:-class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> dp(n, 1); // Step 1: Initialize DP array with 1
+        int maxLIS = 1; // Step 2: Store max LIS length
+
+        for (int i = 1; i < n; i++) {  // Step 3: Iterate over all elements
+            for (int j = 0; j < i; j++) { // Step 4: Check all previous elements
+                if (nums[j] < nums[i]) { // Step 5: Only consider increasing subsequences
+                    dp[i] = max(dp[i], dp[j] + 1); // Step 6: Update dp[i] if we get a longer subsequence
+                }
+            }
+            maxLIS = max(maxLIS, dp[i]); // Step 7: Track the maximum LIS found so far
+        }
+
+        return maxLIS; // Step 8: Return the longest increasing subsequence length
+    }
+};
+
+5.AIM:-Maximum Product Subarray
+PROGRAM:-class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) return 0; // Edge case: Empty array (not needed per constraints)
+
+        int maxProd = nums[0]; // Step 1: Initialize max product
+        int minProd = nums[0]; // Step 2: Initialize min product
+        int result = nums[0];  // Step 3: Initialize result to track max product found
+
+        for (int i = 1; i < n; i++) { // Step 4: Iterate over the array
+            if (nums[i] < 0) // Step 5: Swap max and min if negative, because it flips signs
+                swap(maxProd, minProd);
+
+            // Step 6: Update maxProd and minProd
+            maxProd = max(nums[i], nums[i] * maxProd);
+            minProd = min(nums[i], nums[i] * minProd);
+
+            result = max(result, maxProd); // Step 7: Update the global max result
+        }
+
+        return result; // Step 8: Return the final max product subarray
+    }
+};
+
+6.AIM:-Perfect Squares
+PROGRAM:-class Solution {
+public:
+    int numSquares(int n) {
+        vector<int> dp(n + 1, INT_MAX); // Step 1: Initialize DP array with a large value
+        dp[0] = 0; // Step 2: Base case, 0 needs 0 squares
+
+        for (int i = 1; i <= n; i++) { // Step 3: Compute dp[i] for all 1 to n
+            for (int j = 1; j * j <= i; j++) { // Step 4: Try every perfect square <= i
+                dp[i] = min(dp[i], 1 + dp[i - j * j]); // Step 5: Update the minimum count
+            }
+        }
+        
+        return dp[n]; // Step 6: Return the minimum number of squares needed for n
+    }
+};
+
+7.AIM:-Word Break
+PROGRAM:-class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        unordered_set<string> wordSet(wordDict.begin(), wordDict.end()); // Step 1: Convert wordDict to a set for O(1) lookup
+        int n = s.size();
+        vector<bool> dp(n + 1, false); // Step 2: Initialize DP array, size n+1
+        dp[0] = true; // Step 3: Base case (empty string is always valid)
+
+        for (int i = 1; i <= n; i++) { // Step 4: Iterate over the string
+            for (int j = 0; j < i; j++) { // Step 5: Try all substrings ending at i
+                if (dp[j] && wordSet.find(s.substr(j, i - j)) != wordSet.end()) { 
+                    dp[i] = true; // Step 6: If valid partition found, mark dp[i] as true
+                    break; // Step 7: No need to check further
+                }
+            }
+        }
+
+        return dp[n]; // Step 8: Return if the whole string can be segmented
+    }
+};
+
+8.AIM:-Decode Ways
+PROGRAM:-class Solution {
+public:
+    int numDecodings(string s) {
+        if (s.empty() || s[0] == '0') return 0; // Step 1: Edge case, invalid input
+
+        int n = s.size();
+        vector<int> dp(n + 1, 0); // Step 2: Initialize DP array
+        dp[0] = 1; // Base case: empty string has one way to decode
+        dp[1] = s[0] != '0' ? 1 : 0; // Base case: single character string
+
+        for (int i = 2; i <= n; i++) { // Step 3: Iterate over the string
+            int oneDigit = s[i-1] - '0'; // Get last one digit
+            int twoDigits = stoi(s.substr(i-2, 2)); // Get last two digits
+
+            if (oneDigit >= 1) { // Step 4: If valid single digit, add dp[i-1]
+                dp[i] += dp[i-1];
+            }
+            if (twoDigits >= 10 && twoDigits <= 26) { // Step 5: If valid two-digit number, add dp[i-2]
+                dp[i] += dp[i-2];
+            }
+        }
+
+        return dp[n]; // Step 6: Return final computed result
+    }
+};
+
